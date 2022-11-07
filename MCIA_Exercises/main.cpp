@@ -209,8 +209,51 @@ void realTimeLaplace() {
 	
 }
 
-int main() {
+void pixelCorrespondence() {
 
+	String filepath = samples::findFile("mont.jpg");
+	Mat img = imread(filepath, IMREAD_GRAYSCALE);
+
+
+	//imshow("donkeh", img);
+	//waitKey(0);
+
+	int angle = 30;
+
+	//artificially transform img :)
+	Point2f center((img.cols - 1) / 2.0, (img.rows - 1) / 2.0);
+	Mat rot_mat = getRotationMatrix2D(center, angle, 1.0);
+
+	Mat rotated_img;
+	warpAffine(img, rotated_img, rot_mat, img.size());
+	//imshow("Rotated img", rotated_img);
+	//waitKey(0);
+
+	std::vector<std::pair<Point2i, Point2i>> points;
+	points = correspondence(img, rotated_img, Point2i(31, 31), 20);
+
+	Mat img_con;
+	hconcat(img, rotated_img, img_con);
+
+	Mat img_concat_rgb;
+	cvtColor(img_con, img_concat_rgb, COLOR_GRAY2BGR);
+
+	for (int i = 0; i < points.size(); i++) 
+	{
+		std::cout << points[i].first << " : " << points[i].second << std::endl;
+		Point point2 = points[i].second;
+		point2.x += img.cols;
+		line(img_concat_rgb, points[i].first, point2, Scalar(0, 0, 255), 1);
+	}
+
+	imshow("test", img_concat_rgb);
+	waitKey(0);
+	
+		
+}
+
+int main() {
+	srand(time(0));
 	//ex1();
 	//ex2(150);
 	//ex3(50);
@@ -219,8 +262,9 @@ int main() {
 	//filter_img(21);
 	//highp_filter_img();
 	//fracfilt();
-	laplacefilt();
+	//laplacefilt();
 	//realTimeLaplace();
+	pixelCorrespondence();
 
 	return 0;
 }

@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\DTU Code\MCIA\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\DTU Code\MCIA\opencv\build\x64\vc15\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\CODE\MCIA_HOME\OPEN_CV\opencv\build\include;C:\DTU Code\MCIA\opencv\build\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\CODE\MCIA_HOME\OPEN_CV\opencv\build\x64\vc15\lib\opencv_world460d.lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -93,8 +93,8 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>opencv_world460d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\DTU Code\MCIA\opencv\build\x64\vc15\lib\;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies);opencv_world460d.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\CODE\MCIA_HOME\OPEN_CV\opencv\build\x64\vc15\lib;</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference>
       <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>

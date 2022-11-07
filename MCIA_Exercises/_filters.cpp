@@ -152,6 +152,74 @@ void nonMaximalSuppression(Mat &src, Mat &out, int dist, const int thr) {
 
 }
 
+std::vector<std::pair<Point2i, Point2i>> correspondence(Mat &im1, Mat &im2, Point2i kernel_size, int n_correspondences) {
+	// returns n of correspondences as vector of points, ordered (x,y), NOT (rows, cols)
+	if (im1.rows != im2.rows || im1.cols != im2.cols)
+	{
+		std::invalid_argument("Images must be same size!\n");
+	}
+	else if (kernel_size.x % 2 == 0 || kernel_size.y % 2 == 0) 
+	{
+		std::invalid_argument("Kernel size must be odd!\n");
+	}
+
+	std::vector<std::pair<Point2i, Point2i>> points;
+	points.resize(n_correspondences);
+
+	int r_sample, c_sample;
+
+	// length from centre to kernel boundary
+	int k_r_2 = ( kernel_size.x - 1 ) / 2 ; 
+	int k_c_2 = ( kernel_size.y - 1 ) / 2 ;
+
+	// for looping through each possible submatrix in img2
+	int n_submat_r = im1.rows / kernel_size.x;
+	int n_submat_c = im1.cols / kernel_size.y;
+
+	Mat im1_submat = Mat::zeros(kernel_size.x, kernel_size.y, CV_32F);
+	Mat im2_submat = Mat::zeros(kernel_size.x, kernel_size.y, CV_32F);
+
+	int min_diff = INT_MAX, diff = 0;
+	Point2i min_pos;  
+	Mat std;
+
+	//Mat diffmat = Mat::zeros(kernel_size.x, kernel_size.y, CV_32F);
+	//Mat diffsq = Mat::zeros(kernel_size.x, kernel_size.y, CV_32F);
+
+	for (int i = 0; i < n_correspondences; i++)
+	{
+		r_sample = k_r_2  + rand() % (im1.rows - k_r_2 - 1);
+		c_sample = k_c_2  + rand() % (im1.cols - k_c_2 - 1);
+
+		im1_submat = im1(Range(r_sample - k_r_2, r_sample + k_r_2 + 1), Range(c_sample - k_c_2  , c_sample + k_c_2 + 1));
+
+		for (int j = k_r_2; j < im1.rows - k_r_2 - 1; j += 1)
+		{
+			for (int k = k_c_2; k < im1.cols - k_c_2 - 1; k += 1)
+			{
+				im2_submat = im2(Range(j - k_r_2, j + k_r_2 + 1), Range(k - k_c_2, k + k_c_2 + 1));
+				meanStdDev(im2_submat, noArray(), std);
+				
+
+				diff = sum(abs(im1_submat - im2_submat))[0];
+				
+				if (diff < min_diff)
+				{
+					min_diff = diff;
+					min_pos.x = k;
+					min_pos.y = j;
+				}
+			}
+		}
+
+		points[i].first = Point2i(c_sample, r_sample);
+		points[i].second = min_pos;
+
+		min_diff = INT_MAX;
+	}
+	return points;
+}
+
 /*
 void contourSearch(Mat &src) {
 	unsigned char * pic = src.data;
